@@ -2,17 +2,18 @@
 # -*- coding: utf-8 -*-
 
 import argparse
+import sys
+
+sys.path.append("home-assistant-core")
+
 from datetime import datetime
 from homeassistant.core import Event, State
 from homeassistant.components.influxdb import get_influx_connection, _generate_event_to_json, INFLUX_SCHEMA
 from homeassistant.exceptions import InvalidEntityFormatError
 import json
-import sys
 from tqdm import tqdm
 import voluptuous as vol
 import yaml
-
-sys.path.append("home-assistant-core")
 
 # MySQL / MariaDB
 try:
