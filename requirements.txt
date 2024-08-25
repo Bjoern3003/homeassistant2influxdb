@@ -7,4 +7,4 @@ tqdm~=4.64.0
 wheel
 
 voluptuous~=0.13.1
-homeassistant
+homeassistant~=2022.6.7
