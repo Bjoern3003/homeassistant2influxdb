@@ -56,10 +56,10 @@ be done trivially, I believe.
 In order to not duplicate logic, the script uses the InfluxDB component of
 Home Assistant directly.
 
-I've tested this on Ubuntu 22.04 with Python 3.9.
+I've tested this on Ubuntu 22.04 with Python 3.11.
 
 Setup:
-1. `sudo apt install python3 python3.10-dev python3.10-venv`
+1. `sudo apt install python3.11 python3.11-dev python3.11-venv`
 2. `git clone <this repository> migrate2influxdb`
 3. `cd migrate2influxdb`
 4. `git clone --depth=1 --branch=2024.8.2 https://github.com/home-assistant/core.git home-assistant-core`
