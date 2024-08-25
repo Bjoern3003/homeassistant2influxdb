@@ -62,7 +62,7 @@ Setup:
 1. `sudo apt install python3.11 python3.11-dev python3.11-venv pkg-config default-libmysqlclient-dev`
 2. `git clone <this repository> migrate2influxdb`
 3. `cd migrate2influxdb`
-4. `git clone --depth=1 --branch=2024.8.2 https://github.com/home-assistant/core.git home-assistant-core`
+4. `git clone --depth=1 --branch=2023.7.3 https://github.com/home-assistant/core.git home-assistant-core`
 5. `python3 -m venv .venv`
 
 Dependency installation:
