@@ -2,7 +2,7 @@
 
 Adapted from [dseifert](https://github.com/dseifert/homeassistant2influxdb) now archived version.
 
-Working with home assistant core-2022.7.6 and influx v2.3.0.
+Working with home assistant core-2024.8.2 and influx v2.3.0.
 
 ## Important
 
@@ -56,7 +56,7 @@ be done trivially, I believe.
 In order to not duplicate logic, the script uses the InfluxDB component of
 Home Assistant directly.
 
-I've tested this on Ubuntu 18.04 with Python 3.7.
+I've tested this on Ubuntu 22.04 with Python 3.9.
 
 Setup:
 1. `sudo apt install python3 python3.7-dev`
