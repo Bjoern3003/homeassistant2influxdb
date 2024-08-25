@@ -59,7 +59,7 @@ Home Assistant directly.
 I've tested this on Ubuntu 22.04 with Python 3.11.
 
 Setup:
-1. `sudo apt install python3.11 python3.11-dev python3.11-venv`
+1. `sudo apt install python3.11 python3.11-dev python3.11-venv pkg-config`
 2. `git clone <this repository> migrate2influxdb`
 3. `cd migrate2influxdb`
 4. `git clone --depth=1 --branch=2024.8.2 https://github.com/home-assistant/core.git home-assistant-core`
