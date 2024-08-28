@@ -247,8 +247,8 @@ def main():
 
                         if influx_batch_size_cur >= influx_batch_size_max:
                             if not args.dry:
-                                with open('influx_batch.json', 'a') as f:
-                                    f.write(json.dumps(influx_batch_json, indent=4, default=str))
+#                                 with open('influx_batch.json', 'a') as f:
+#                                     f.write(json.dumps(influx_batch_json, indent=4, default=str))
                                 influx.write(influx_batch_json)
                             influx_batch_size_cur = 0
                             influx_batch_json = []
@@ -259,8 +259,8 @@ def main():
             cursor.close()
 
     if not args.dry:
-        with open('influx_batch.json', 'a') as f:
-            f.write(json.dumps(influx_batch_json, indent=4, default=str))
+#         with open('influx_batch.json', 'a') as f:
+#             f.write(json.dumps(influx_batch_json, indent=4, default=str))
         influx.write(influx_batch_json)
     # Clean up by closing influx connection, and removing temporary table
     influx.close()
