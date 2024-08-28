@@ -14,6 +14,7 @@ import json
 from tqdm import tqdm
 import voluptuous as vol
 import yaml
+import pprint
 
 # MySQL / MariaDB
 try:
@@ -143,7 +144,7 @@ def main():
     print(f"Migrating home assistant database (tables {', '.join(tables)}) to Influx database {args.database} and " +
           f"bucket {influx_config.get('bucket')}")
     # write to influxdb in batches
-    influx_batch_size_max = 1024
+    influx_batch_size_max = 100
     influx_batch_size_cur = 0
     influx_batch_json = []
 
@@ -191,17 +192,17 @@ def main():
                             _attributes_raw = row[2]
                             _attributes = rename_friendly_name(json.loads(_attributes_raw))
                             _event_type = row[3]
-                            _time_fired = datetime.fromtimestamp(row[4])
+                            #_time_fired = datetime.fromtimestamp(row[4])
                         elif table == "statistics":
                             _entity_id = rename_entity_id(row[0])
-                            _state = row[1]
-                            _mean = row[1]
+                            _state = row[1] if row[1] else row[4]
+                            _mean = row[1] if row[1] else row[4]
                             _min = row[2]
                             _max = row[3]
-                            _attributes_raw = row[4]
+                            _attributes_raw = row[5]
                             _attributes = create_statistics_attributes(_mean, _min, _max, json.loads(_attributes_raw))
-                            _event_type = row[5]
-                            _time_fired = datetime.fromtimestamp(row[6])
+                            _event_type = row[6]
+                            _time_fired = datetime.fromtimestamp(row[7])
                     except Exception as e:
                         print("Failed extracting data from %s: %s.\nAttributes: %s" % (row, e, _attributes_raw))
                         continue
@@ -241,12 +242,13 @@ def main():
                                 print(row)
                             else:
                                 statistics[_entity_id][friendly_name] += 1
-
                         influx_batch_json.append(data)
                         influx_batch_size_cur += 1
 
                         if influx_batch_size_cur >= influx_batch_size_max:
                             if not args.dry:
+                                with open('influx_batch.json', 'a') as f:
+                                    f.write(json.dumps(influx_batch_json, indent=4, default=str))
                                 influx.write(influx_batch_json)
                             influx_batch_size_cur = 0
                             influx_batch_json = []
@@ -257,6 +259,8 @@ def main():
             cursor.close()
 
     if not args.dry:
+        with open('influx_batch.json', 'a') as f:
+            f.write(json.dumps(influx_batch_json, indent=4, default=str))
         influx.write(influx_batch_json)
     # Clean up by closing influx connection, and removing temporary table
     influx.close()
@@ -313,13 +317,14 @@ def formulate_sql_query(table: str, arg_tables: str):
             inset_query = f"{sql_query}" + \
                 f"\n         AND statistics.start < (select min(events.time_fired) as datetetime_start from events)"
         else:
-            inset_query = "\n         AND statistics.start_ts < 1708837680"
+            inset_query = ""
             # start 25.2. 6:10 MEZ = 1708837680
         sql_query = f"""
         SELECT statistics_meta.statistic_id,
                statistics.mean,
                statistics.min,
                statistics.max,
+               statistics.state,
                state_attributes.shared_attrs,
                'state_changed',
                statistics.start_ts
@@ -328,11 +333,12 @@ def formulate_sql_query(table: str, arg_tables: str):
              state_attributes
         WHERE statistics.metadata_id = statistics_meta.id
         """ + \
-         f""" AND mean != 0 {inset_query}
+         f""" AND (mean != 0 OR state !=0) {inset_query}
          AND state_attributes.attributes_id = (
             SELECT state_tmp.attributes_id
             FROM state_tmp
-            WHERE state_tmp.entity_id = statistics_meta.statistic_id)
+            WHERE state_tmp.entity_id = statistics_meta.statistic_id
+         )
         """
     return sql_query
 
